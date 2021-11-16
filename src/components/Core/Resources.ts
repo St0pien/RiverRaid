@@ -1,4 +1,5 @@
 export enum Colors {
   side = 'green',
-  water = 'blue'
+  water = 'blue',
+  shore = '#332100'
 }
