@@ -64,13 +64,13 @@ export default class River implements Drawable {
     // Only debug
     // ctx.fillStyle = 'red';
     // Level.map.forEach((stripe, index) => {
-    //   const left = stripe[0];
-    //   const x = Level.widthPercent(left) + Level.horizontalCenter;
-    //   const y =
-    //     Level.mapHeight -
-    //     (index * Level.mapHeight) / (Level.map.length - 2) +
-    //     Level.scroll;
-    //   ctx.fillRect(x, y, Level.widthPercent(stripe[1] - stripe[0]), 2);
+      // const left = stripe[0];
+      // const x = Level.widthPercent(left) + Level.horizontalCenter;
+      // const y =
+        // Level.mapHeight -
+        // (index * Level.mapHeight) / (Level.map.length - 2) +
+        // Level.scroll;
+      // ctx.fillRect(x, y, Level.widthPercent(stripe[1] - stripe[0]), 2);
     // });
   }
 }

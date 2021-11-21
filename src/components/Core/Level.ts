@@ -1,64 +1,24 @@
 export default class Level {
   private static _scroll = 0;
-  private static readonly SCROLL_SPEED = 0.2;
+  private static readonly SCROLL_SPEED = 0.3;
 
-  private static readonly RIVER_CHANGE_CHANCE = 0.9;
-  private static readonly MIN_RIVER_WIDTH = 20;
+  private static readonly SEGMENT_COUNT = 39;
+  private static readonly RIVER_CHANGE_CHANCE = 0.5;
+  private static readonly MIN_RIVER_WIDTH = 15;
   private static readonly MAX_RIVER_WIDTH = 60;
-  private static readonly RANDOMNESS_RATIO = 10;
+  private static readonly RANDOMNESS_RATIO = 5;
 
-  private static _map: number[][] = [
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15],
-    [-15, 15]
-  ];
+  private static _map: number[][] = Array.from(
+    Array(this.SEGMENT_COUNT),
+    () => [-15, 15]
+  );
 
-  private static islands: number[][] = [
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null,
-    null
-  ];
+  private static islands: number[][] = Array.from(
+    Array(this.SEGMENT_COUNT),
+    () => null
+  );
+
+  private static islandCount = 0;
 
   static mapWidth: number = -1;
   static mapHeight: number = -1;
@@ -95,39 +55,61 @@ export default class Level {
     return this._scroll;
   }
 
-  static generateRiver() {
-    for (let i = 0; i < 5; i++) {}
+  private static generateBaseShape() {
+    this.map.shift();
+    this._scroll = 0;
+    const [lastLeft, lastRight] = this.map[this.map.length - 1];
+
+    let shouldChange = Math.random() < this.RIVER_CHANGE_CHANCE ? -1 : 1;
+    let left =
+      lastLeft -
+      Math.floor(Math.random() * this.RANDOMNESS_RATIO) * shouldChange;
+    if (left < -50) {
+      left = -50;
+    }
+
+    shouldChange = Math.random() < this.RIVER_CHANGE_CHANCE ? -1 : 1;
+    let right =
+      lastRight +
+      Math.floor(Math.random() * this.RANDOMNESS_RATIO) * shouldChange
+    if (right > 50) {
+      right = 50;
+    }
+
+    if (Math.abs(right - left) < this.MIN_RIVER_WIDTH) {
+      do {
+        left--;
+        right++;
+      } while (Math.abs(right - left) < this.MIN_RIVER_WIDTH);
+    }
+
+    if (Math.abs(right - left) > this.MAX_RIVER_WIDTH) {
+      do {
+        left++;
+        right--;
+      } while (Math.abs(right - left) > this.MAX_RIVER_WIDTH);
+    }
+
+    this.map.push([left, right]);
+  }
+
+  private static generateIslands() {
+    const spawnIsland = Math.random();
+    if (spawnIsland <= 0.1 && this.islandCount == 0) {
+      this.islandCount = Math.floor(Math.random() * 20) + 10;
+    }
+
+    if (this.islandCount > 0) {
+      this.islandCount--;
+    }
   }
 
   static update(timeElapsed: number) {
     this._scroll += timeElapsed * this.SCROLL_SPEED;
+
     if (this.scroll >= this.mapHeight / (this.map.length - 2)) {
-      this.map.shift();
-      this._scroll = 0;
-      const shouldChange = Math.random();
-      if (shouldChange <= this.RIVER_CHANGE_CHANCE) {
-        const [lastLeft, lastRight] = this.map[this.map.length - 1];
-        let left = lastLeft - (Math.floor(Math.random() * this.RANDOMNESS_RATIO) - this.RANDOMNESS_RATIO / 2);
-        if (left > -this.MIN_RIVER_WIDTH / 2) {
-          left = -this.MIN_RIVER_WIDTH / 2;
-        }
-        if (left < -this.MAX_RIVER_WIDTH / 2) {
-          left = -this.MAX_RIVER_WIDTH / 2;
-        }
-
-        let right = lastRight + (Math.floor(Math.random() * this.RANDOMNESS_RATIO) - this.RANDOMNESS_RATIO / 2);
-        if (right < this.MIN_RIVER_WIDTH / 2) {
-          right = this.MIN_RIVER_WIDTH / 2;
-        }
-        if (right > this.MAX_RIVER_WIDTH / 2) {
-          right = this.MAX_RIVER_WIDTH / 2;
-        }
-
-        this.map.push([left, right]);
-      } else {
-        const last = this.map[this.map.length - 1];
-        this.map.push([last[0], last[1]]);
-      }
+      this.generateIslands();
+      this.generateBaseShape();
     }
   }
 }
