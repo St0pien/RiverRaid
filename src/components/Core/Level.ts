@@ -9,7 +9,7 @@ export default class Level {
   private static readonly MAX_RIVER_WIDTH = 60;
   private static readonly RANDOMNESS_RATIO = 5;
 
-  private static readonly ISLAND_SPAWN_CHANCE = 0.01;
+  private static readonly ISLAND_SPAWN_CHANCE = 0.005;
   private static readonly MIN_ISLAND_SEGMENTS = 5;
   private static readonly MAX_ISLAND_SEGMENTS = 30;
 
@@ -141,10 +141,12 @@ export default class Level {
       const lastMap = this.map[this.map.length - 1];
       if (Math.abs(left - lastMap[0]) < this.MIN_RIVER_WIDTH) {
         lastMap[0] = (left - (50 - this.SHORE_THICKNESS / 2)) / 2;
+        left += 5;
       }
       console.log(Math.abs(left - lastMap[0]));
       if (Math.abs(right - lastMap[1]) < this.MIN_RIVER_WIDTH) {
         lastMap[1] = (right + 50 - this.SHORE_THICKNESS / 2) / 2;
+        right -= 5;
       }
 
 
