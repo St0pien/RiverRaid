@@ -1,9 +1,9 @@
 import Window from './Core/Window';
-import Player from './Drawables/Player';
+import Player from './GameObjects/Player';
 import Input from './Core/Input';
-import River from './Drawables/River';
+import River from './GameObjects/River';
 import Level from './Core/Level';
-import Bridges from './Drawables/Bridge';
+import Bridges from './GameObjects/Bridge';
 
 export default class RiverRaid extends Window {
   private _player: Player;

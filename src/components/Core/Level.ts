@@ -1,6 +1,9 @@
 export default class Level {
   private static _scroll = 0;
-  private static readonly SCROLL_SPEED = 0.3;
+  private static readonly MAX_SCROLL_SPEED = 1;
+  private static readonly MIN_SCROLL_SPEED = 0.2;
+  private static readonly DEFAULT_SCROLL_SPEED = 0.4;
+  private static SCROLL_SPEED = this.DEFAULT_SCROLL_SPEED;
 
   private static readonly SHORE_THICKNESS = 10;
   private static readonly SEGMENT_COUNT = 45;
@@ -34,7 +37,7 @@ export default class Level {
 
   static mapWidth: number = -1;
   static mapHeight: number = -1;
-  static upPresegments: number = 4;
+  static upPresegments: number = 10;
   static downPresegments: number = 1;
 
   static get hiddenSegments() {
@@ -79,6 +82,27 @@ export default class Level {
 
   static get scroll() {
     return this._scroll;
+  }
+
+  static get scrollSpeed() {
+    return this.SCROLL_SPEED;
+  }
+
+  static set scrollSpeed(val: number) {
+    if (val > this.MAX_SCROLL_SPEED) {
+      val = this.MAX_SCROLL_SPEED;
+    }
+
+    if (val < this.MIN_SCROLL_SPEED) {
+      val = this.MIN_SCROLL_SPEED;
+    }
+
+    this.SCROLL_SPEED = val;
+  }
+
+  static speedDefault(timeElapsed: number) {
+    this.SCROLL_SPEED +=
+      timeElapsed * 0.002 * (this.DEFAULT_SCROLL_SPEED - this.SCROLL_SPEED);
   }
 
   private static generateBoundaries(
@@ -142,7 +166,11 @@ export default class Level {
     const noBridges = firstBridges.indexOf(true) == -1;
 
     const spawnIsland = Math.random();
-    if (spawnIsland <= this.ISLAND_SPAWN_CHANCE && this.islandCount == 0 && noBridges) {
+    if (
+      spawnIsland <= this.ISLAND_SPAWN_CHANCE &&
+      this.islandCount == 0 &&
+      noBridges
+    ) {
       this.islandCount =
         Math.floor(Math.random() * this.MIN_ISLAND_SEGMENTS) +
         this.MAX_ISLAND_SEGMENTS;
@@ -188,17 +216,20 @@ export default class Level {
     if (Math.random() < this.BRIDGE_SPAWN_CHANCE) spawnBridge = true;
 
     const firstIslands = this.islands.slice(-10, this.islands.length);
-    if (firstIslands.filter(i => !i).length != firstIslands.length) spawnBridge = false;
+    if (firstIslands.filter((i) => !i).length != firstIslands.length)
+      spawnBridge = false;
 
     const firstBridges = this.bridges.slice(-10, this.bridges.length);
     if (firstBridges.indexOf(true) > -1) spawnBridge = false;
 
     if (spawnBridge) {
       this.bridges.push(true);
-      this.map[this.map.length - 1] = [-10 + Math.random(), 10 + Math.random()];
-      this.map[this.map.length - 2] = [-10 + Math.random(), 10 + Math.random()];
-      this.map[this.map.length - 3] = [-10 + Math.random(), 10 + Math.random()];
-      this.map[this.map.length - 4] = [-10 + Math.random(), 10 + Math.random()];
+      
+      const firstSegments = this.map.slice(-10, this.map.length);
+      firstSegments.forEach(stripe => {
+        stripe[0] = -10 + Math.random();
+        stripe[1] = 10 + Math.random();
+      });
     } else {
       this.bridges.push(false);
     }

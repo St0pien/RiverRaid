@@ -31,4 +31,12 @@ export default class Input {
       }
     });
   }
+
+  static get keyMap() {
+    return this._keyMap;
+  }
+
+  static keysInactive(keys: string[]): boolean {
+    return keys.every(k => !this.keyMap[k])
+  }
 }

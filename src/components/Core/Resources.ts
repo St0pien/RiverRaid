@@ -1,3 +1,5 @@
+import planeimg from '../../assets/sprites/plane.png';
+
 export enum Colors {
   side = 'green',
   water = 'blue',
@@ -6,3 +8,6 @@ export enum Colors {
   street2 = 'gray',
   street3 = 'yellow'
 }
+
+export const PlaneSprite = new Image();
+PlaneSprite.src = planeimg;
