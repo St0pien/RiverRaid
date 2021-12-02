@@ -3,7 +3,7 @@ export default class Level {
   private static readonly SCROLL_SPEED = 0.3;
 
   private static readonly SHORE_THICKNESS = 10;
-  private static readonly SEGMENT_COUNT = 39;
+  private static readonly SEGMENT_COUNT = 45;
   private static readonly RIVER_CHANGE_CHANCE = 0.5;
   private static readonly MIN_RIVER_WIDTH = 30;
   private static readonly MAX_RIVER_WIDTH = 60;
@@ -12,6 +12,8 @@ export default class Level {
   private static readonly ISLAND_SPAWN_CHANCE = 0.005;
   private static readonly MIN_ISLAND_SEGMENTS = 5;
   private static readonly MAX_ISLAND_SEGMENTS = 30;
+
+  private static readonly BRIDGE_SPAWN_CHANCE = 0.005;
 
   private static _map: number[][] = Array.from(
     Array(this.SEGMENT_COUNT),
@@ -23,11 +25,16 @@ export default class Level {
     () => null
   );
 
+  private static _bridges: boolean[] = Array.from(
+    Array(this.SEGMENT_COUNT),
+    () => false
+  );
+
   private static islandCount = 0;
 
   static mapWidth: number = -1;
   static mapHeight: number = -1;
-  static upPresegments: number = 2;
+  static upPresegments: number = 4;
   static downPresegments: number = 1;
 
   static get hiddenSegments() {
@@ -66,6 +73,10 @@ export default class Level {
     return this._islands;
   }
 
+  static get bridges() {
+    return this._bridges;
+  }
+
   static get scroll() {
     return this._scroll;
   }
@@ -88,8 +99,8 @@ export default class Level {
     shouldChange = Math.random() < changeChance ? -1 : 1;
     let right =
       lastRight + Math.floor(Math.random() * randomnessRatio) * shouldChange;
-    if (right > 50-this.SHORE_THICKNESS) {
-      right = 50-this.SHORE_THICKNESS;
+    if (right > 50 - this.SHORE_THICKNESS) {
+      right = 50 - this.SHORE_THICKNESS;
     }
 
     if (Math.abs(right - left) < minWidth) {
@@ -127,28 +138,38 @@ export default class Level {
   }
 
   private static generateIslands() {
+    const firstBridges = this.bridges.slice(-10, this.bridges.length);
+    const noBridges = firstBridges.indexOf(true) == -1;
+
     const spawnIsland = Math.random();
-    if (spawnIsland <= this.ISLAND_SPAWN_CHANCE && this.islandCount == 0) {
-      this.islandCount = Math.floor(Math.random() * this.MIN_ISLAND_SEGMENTS) + this.MAX_ISLAND_SEGMENTS;
+    if (spawnIsland <= this.ISLAND_SPAWN_CHANCE && this.islandCount == 0 && noBridges) {
+      this.islandCount =
+        Math.floor(Math.random() * this.MIN_ISLAND_SEGMENTS) +
+        this.MAX_ISLAND_SEGMENTS;
     }
 
     this.islands.shift();
     if (this.islandCount > 0) {
       const last = this.islands[this.islands.length - 1];
       const [lastLeft, lastRight] = last ? last : this.map[this.map.length - 1];
-      let [left, right] = this.generateBoundaries(lastLeft, lastRight, this.RIVER_CHANGE_CHANCE, this.RANDOMNESS_RATIO, this.MIN_RIVER_WIDTH, this.MAX_RIVER_WIDTH/3);
+      let [left, right] = this.generateBoundaries(
+        lastLeft,
+        lastRight,
+        this.RIVER_CHANGE_CHANCE,
+        this.RANDOMNESS_RATIO,
+        this.MIN_RIVER_WIDTH,
+        this.MAX_RIVER_WIDTH / 3
+      );
 
       const lastMap = this.map[this.map.length - 1];
       if (Math.abs(left - lastMap[0]) < this.MIN_RIVER_WIDTH) {
         lastMap[0] = (left - (50 - this.SHORE_THICKNESS / 2)) / 2;
         left += 5;
       }
-      console.log(Math.abs(left - lastMap[0]));
       if (Math.abs(right - lastMap[1]) < this.MIN_RIVER_WIDTH) {
         lastMap[1] = (right + 50 - this.SHORE_THICKNESS / 2) / 2;
         right -= 5;
       }
-
 
       this.islands.push([left, right]);
     } else {
@@ -157,6 +178,29 @@ export default class Level {
 
     if (this.islandCount > 0) {
       this.islandCount--;
+    }
+  }
+
+  private static generateBridges() {
+    this.bridges.shift();
+
+    let spawnBridge = false;
+    if (Math.random() < this.BRIDGE_SPAWN_CHANCE) spawnBridge = true;
+
+    const firstIslands = this.islands.slice(-10, this.islands.length);
+    if (firstIslands.filter(i => !i).length != firstIslands.length) spawnBridge = false;
+
+    const firstBridges = this.bridges.slice(-10, this.bridges.length);
+    if (firstBridges.indexOf(true) > -1) spawnBridge = false;
+
+    if (spawnBridge) {
+      this.bridges.push(true);
+      this.map[this.map.length - 1] = [-10 + Math.random(), 10 + Math.random()];
+      this.map[this.map.length - 2] = [-10 + Math.random(), 10 + Math.random()];
+      this.map[this.map.length - 3] = [-10 + Math.random(), 10 + Math.random()];
+      this.map[this.map.length - 4] = [-10 + Math.random(), 10 + Math.random()];
+    } else {
+      this.bridges.push(false);
     }
   }
 
@@ -169,6 +213,7 @@ export default class Level {
     ) {
       this.generateIslands();
       this.generateBaseShape();
+      this.generateBridges();
     }
   }
 }

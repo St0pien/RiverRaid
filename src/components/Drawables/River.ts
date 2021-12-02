@@ -128,25 +128,61 @@ export default class River implements Drawable {
           (index * Level.mapHeight) /
             (Level.map.length - Level.hiddenSegments - 1) +
           Level.scroll +
-          (Level.mapHeight / (Level.map.length - Level.hiddenSegments - 1))
+          Level.mapHeight / (Level.map.length - Level.hiddenSegments - 1)
       );
       ctx.stroke();
     }
   }
 
+  drawBridgeStreet(ctx: CanvasRenderingContext2D, y: number, height: number) {
+    ctx.fillStyle = Colors.street1;
+    ctx.fillRect(0, y, Level.mapWidth, Level.heightPercent(height));
+
+    ctx.fillStyle = Colors.street2;
+    ctx.fillRect(
+      0,
+      y + Level.heightPercent(height * 0.15),
+      Level.mapWidth,
+      Level.heightPercent(height * 0.7)
+    );
+
+    ctx.fillStyle = Colors.street3;
+    ctx.fillRect(
+      0,
+      y + Level.heightPercent(height * 0.45),
+      Level.mapWidth,
+      Level.heightPercent(height * 0.1)
+    );
+  }
+
+  drawBridgesStreets(ctx: CanvasRenderingContext2D) {
+    Level.bridges.forEach((bridge, index) => {
+      if (!bridge) return;
+
+      const y =
+        Level.mapHeight -
+        ((index - Level.downPresegments) * Level.mapHeight) /
+          (Level.map.length - Level.hiddenSegments - 1) +
+        Level.scroll;
+      this.drawBridgeStreet(ctx, y, 8);
+    });
+  }
+
   draw(ctx: CanvasRenderingContext2D) {
+    this.drawBridgesStreets(ctx);
     this.drawRiver(ctx);
 
     // Only debug
     // ctx.fillStyle = 'red';
     // Level.map.forEach((stripe, index) => {
-    // const left = stripe[0];
-    // const x = Level.widthPercent(left) + Level.horizontalCenter;
-    // const y =
-    // Level.mapHeight -
-    // (index * Level.mapHeight) / (Level.map.length - Level.hiddenSegments - 1) +
-    // Level.scroll;
-    // ctx.fillRect(x, y, Level.widthPercent(stripe[1] - stripe[0]), 2);
+      // const left = stripe[0];
+      // const x = Level.hCords(left);
+      // const y =
+        // Level.mapHeight -
+        // ((index - Level.downPresegments) * Level.mapHeight) /
+          // (Level.map.length - Level.hiddenSegments - 1) +
+        // Level.scroll;
+      // ctx.fillRect(x, y, Level.widthPercent(stripe[1] - stripe[0]), 2);
     // });
   }
 }

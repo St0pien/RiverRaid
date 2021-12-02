@@ -3,16 +3,19 @@ import Player from './Drawables/Player';
 import Input from './Core/Input';
 import River from './Drawables/River';
 import Level from './Core/Level';
+import Bridges from './Drawables/Bridge';
 
 export default class RiverRaid extends Window {
   private _player: Player;
   private _river: River;
+  private _bridges: Bridges;
 
   constructor() {
     super()
     Input.init();
     this._player = new Player();
     this._river = new River();
+    this._bridges = new Bridges();
   }
 
   update(timeElapsed: number) {
