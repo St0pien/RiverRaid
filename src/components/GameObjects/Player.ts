@@ -9,7 +9,7 @@ export default class Player extends Sprite implements GameObject {
   private readonly SPEED: number = 0.02;
 
   constructor() {
-    super(Player.SPRITE_IMG, [-1, 45], [4, 4]);
+    super(Player.SPRITE_IMG, [-1, 45], [5, 5]);
     Input.bindKeyAction('ArrowLeft', this.moveLeft);
     Input.bindKeyAction('ArrowRight', this.moveRight);
     Input.bindKeyAction('ArrowUp', this.accelerate);
@@ -31,11 +31,11 @@ export default class Player extends Sprite implements GameObject {
   };
 
   accelerate = (timeElapsed: number) => {
-    Level.scrollSpeed = Level.scrollSpeed + timeElapsed*0.001;
+    Level.scrollSpeed += timeElapsed*0.002*(Level.MAX_SCROLL_SPEED - Level.scrollSpeed);
   }
 
   decelerate = (timeElapsed: number) => {
-    Level.scrollSpeed = Level.scrollSpeed - timeElapsed*0.001;
+    Level.scrollSpeed += timeElapsed*0.002*(Level.MIN_SCROLL_SPEED - Level.scrollSpeed);
   }
 
   update(timeElapsed: number) {

@@ -25,8 +25,8 @@ export class Sprite implements Drawable {
       100,
       Level.hCords(x - w / 2),
       Level.vCords(y - h / 2),
-      Level.widthPercent(w),
-      Level.widthPercent(h)
+      Level.heightPercent(w),
+      Level.heightPercent(h)
     );
   }
 }

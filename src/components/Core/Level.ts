@@ -1,7 +1,7 @@
 export default class Level {
+  static readonly MAX_SCROLL_SPEED = 1;
+  static readonly MIN_SCROLL_SPEED = 0;
   private static _scroll = 0;
-  private static readonly MAX_SCROLL_SPEED = 1;
-  private static readonly MIN_SCROLL_SPEED = 0.2;
   private static readonly DEFAULT_SCROLL_SPEED = 0.4;
   private static SCROLL_SPEED = this.DEFAULT_SCROLL_SPEED;
 
@@ -39,6 +39,8 @@ export default class Level {
   static mapHeight: number = -1;
   static upPresegments: number = 10;
   static downPresegments: number = 1;
+
+  private static bridgeSpace = 0;
 
   static get hiddenSegments() {
     return this.upPresegments + this.downPresegments;
@@ -147,6 +149,13 @@ export default class Level {
   private static generateBaseShape() {
     this.map.shift();
     this._scroll = 0;
+
+    if (this.bridgeSpace > 0) {
+      this.bridgeSpace--;
+      this.map.push([-10 - Math.random(), 10+Math.random()]);
+      return;
+    }
+
     const [lastLeft, lastRight] = this.map[this.map.length - 1];
 
     this.map.push(
@@ -224,6 +233,7 @@ export default class Level {
 
     if (spawnBridge) {
       this.bridges.push(true);
+      this.bridgeSpace = 10;
       
       const firstSegments = this.map.slice(-10, this.map.length);
       firstSegments.forEach(stripe => {
