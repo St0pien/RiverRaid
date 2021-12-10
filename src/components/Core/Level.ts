@@ -107,6 +107,82 @@ export default class Level {
       timeElapsed * 0.002 * (this.DEFAULT_SCROLL_SPEED - this.SCROLL_SPEED);
   }
 
+  static getNearStripes(y: number): number[] {
+    let heightMap = this.map.map((_, index) =>
+      Math.abs(
+        y -
+          (Level.mapHeight -
+            ((index - Level.downPresegments) * Level.mapHeight) /
+              (Level.map.length - Level.hiddenSegments - 1) +
+            Level.scroll)
+      )
+    );
+
+    const yIndex = heightMap.indexOf(Math.min(...heightMap));
+    heightMap[yIndex] = Infinity
+
+    const y2Index = heightMap.indexOf(Math.min(...heightMap));
+
+    // const yIndex = this.map.findIndex(
+    // (_, index) =>
+    // Math.abs(
+    // y -
+    // (Level.mapHeight -
+    // ((index - Level.downPresegments - 1) * Level.mapHeight) /
+    // (Level.map.length - Level.hiddenSegments - 1)) +
+    // Level.scroll
+    // ) <
+    // Level.mapHeight / (Level.map.length - Level.hiddenSegments - 1)
+    // );
+    return [y2Index, yIndex];
+  }
+
+  /**
+   * @param  {number} y1 Index of the first of the stripes between which boundaries are calculated
+   * @param  {number} y2 Index of the first of the stripes between which boundaries are calculated
+   */
+  static calculteLinearX(
+    y1: number,
+    y2: number,
+    y: number,
+    leftSide = true,
+    map: number[][] = this.map
+  ): number {
+    const xa = Level.hCords(map[y1][leftSide ? 0 : 1]);
+    const ya =
+      Level.mapHeight -
+      ((y1 - Level.downPresegments) * Level.mapHeight) /
+        (Level.map.length - Level.hiddenSegments - 1) +
+      Level.scroll;
+    const xb = Level.hCords(map[y2][leftSide ? 0 : 1]);
+    const yb =
+      Level.mapHeight -
+      ((y2 - Level.downPresegments) * Level.mapHeight) /
+        (Level.map.length - Level.hiddenSegments - 1) +
+      Level.scroll;
+    return (xa * (y - yb) - xb * (y - ya)) / (ya - yb);
+  }
+
+  static isBetweenShores(x: number, y: number) {
+    const [y1, y2] = this.getNearStripes(y);
+    const wallXLeft = this.calculteLinearX(y1, y2, y);
+    const wallXRight = this.calculteLinearX(y1, y2, y, false);
+
+    let isBetween = true;
+
+    if (this.islands[y1] && this.islands[y2]) {
+      const islandXLeft = this.calculteLinearX(y1, y2, y, true, this.islands);
+      const islandXRight = this.calculteLinearX(y1, y2, y, false, this.islands);
+
+      if (x > islandXLeft && x < islandXRight) isBetween = false;
+    }
+
+    if (x < wallXLeft) isBetween = false;
+    if (x > wallXRight) isBetween = false;
+
+    return isBetween;
+  }
+
   private static generateBoundaries(
     lastLeft: number,
     lastRight: number,
@@ -152,7 +228,7 @@ export default class Level {
 
     if (this.bridgeSpace > 0) {
       this.bridgeSpace--;
-      this.map.push([-10 - Math.random(), 10+Math.random()]);
+      this.map.push([-10 - Math.random(), 10 + Math.random()]);
       return;
     }
 
@@ -231,12 +307,15 @@ export default class Level {
     const firstBridges = this.bridges.slice(-10, this.bridges.length);
     if (firstBridges.indexOf(true) > -1) spawnBridge = false;
 
+    const firstSegments = this.map.slice(-10, this.map.length);
+    if (firstSegments.findIndex(([left, right]) => left > 0 || right < 0) > -1)
+      spawnBridge = false;
+
     if (spawnBridge) {
       this.bridges.push(true);
       this.bridgeSpace = 10;
-      
-      const firstSegments = this.map.slice(-10, this.map.length);
-      firstSegments.forEach(stripe => {
+
+      firstSegments.forEach((stripe) => {
         stripe[0] = -10 + Math.random();
         stripe[1] = 10 + Math.random();
       });

@@ -6,10 +6,11 @@ import { PlaneSprite } from '../Core/Resources';
 
 export default class Player extends Sprite implements GameObject {
   private static readonly SPRITE_IMG = PlaneSprite;
+  private static readonly COLLIDER_MULTIPLIER = 0.85;
   private readonly SPEED: number = 0.02;
 
   constructor() {
-    super(Player.SPRITE_IMG, [-1, 45], [5, 5]);
+    super(Player.SPRITE_IMG, [-1, 40], [5, 5]);
     Input.bindKeyAction('ArrowLeft', this.moveLeft);
     Input.bindKeyAction('ArrowRight', this.moveRight);
     Input.bindKeyAction('ArrowUp', this.accelerate);
@@ -17,25 +18,65 @@ export default class Player extends Sprite implements GameObject {
   }
 
   moveLeft = (timeElapsed: number) => {
-    if (Level.map[1][0] < this.pos[0] - this.SPEED*timeElapsed) {
-      this.pos[0] -= this.SPEED * timeElapsed;
-      this.imgOffset = 1;
-    }
+    this.pos[0] -= this.SPEED * timeElapsed;
+    this.imgOffset = 1;
   };
 
   moveRight = (timeElapsed: number) => {
-    if (Level.hCords(Level.map[1][1]) > Level.hCords(this.pos[0] + this.SPEED*timeElapsed) + 20) {
-      this.pos[0] += this.SPEED * timeElapsed;
-      this.imgOffset = 2;
-    }
+    this.pos[0] += this.SPEED * timeElapsed;
+    this.imgOffset = 2;
   };
 
   accelerate = (timeElapsed: number) => {
-    Level.scrollSpeed += timeElapsed*0.002*(Level.MAX_SCROLL_SPEED - Level.scrollSpeed);
-  }
+    Level.scrollSpeed +=
+      timeElapsed * 0.002 * (Level.MAX_SCROLL_SPEED - Level.scrollSpeed);
+  };
 
   decelerate = (timeElapsed: number) => {
-    Level.scrollSpeed += timeElapsed*0.002*(Level.MIN_SCROLL_SPEED - Level.scrollSpeed);
+    Level.scrollSpeed +=
+      timeElapsed * 0.002 * (Level.MIN_SCROLL_SPEED - Level.scrollSpeed);
+  };
+
+  die() {
+    alert('You died!');
+  }
+
+  get corners() {
+    const leftTop = [
+      Level.hCords(
+        this.pos[0] - (this.size[0] / 2) * Player.COLLIDER_MULTIPLIER
+      ),
+      Level.vCords(
+        this.pos[1] - (this.size[1] / 2) * Player.COLLIDER_MULTIPLIER
+      )
+    ];
+    const rightTop = [
+      Level.hCords(
+        this.pos[0] + (this.size[0] / 2) * Player.COLLIDER_MULTIPLIER - 2.5
+      ),
+      Level.vCords(
+        this.pos[1] - (this.size[1] / 2) * Player.COLLIDER_MULTIPLIER
+      )
+    ];
+
+    const leftBottom = [
+      Level.hCords(
+        this.pos[0] - (this.size[0] / 2) * Player.COLLIDER_MULTIPLIER
+      ),
+      Level.vCords(
+        this.pos[1] + (this.size[1] / 2) * Player.COLLIDER_MULTIPLIER
+      )
+    ];
+    const rightBottom = [
+      Level.hCords(
+        this.pos[0] + (this.size[0] / 2) * Player.COLLIDER_MULTIPLIER - 2.5
+      ),
+      Level.vCords(
+        this.pos[1] + (this.size[1] / 2) * Player.COLLIDER_MULTIPLIER
+      )
+    ];
+
+    return [leftBottom, leftTop, rightBottom, rightTop];
   }
 
   update(timeElapsed: number) {
@@ -46,9 +87,15 @@ export default class Player extends Sprite implements GameObject {
     }
 
     blocks = ['ArrowUp'];
-    if(Input.keysInactive(blocks)) {
+    if (Input.keysInactive(blocks)) {
       Level.speedDefault(timeElapsed);
     }
+
+    this.corners.forEach(corner => {
+      if (!Level.isBetweenShores(corner[0], corner[1])) {
+        this.die();
+      }
+    });
   }
 
   draw(ctx: CanvasRenderingContext2D) {
