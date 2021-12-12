@@ -29,6 +29,7 @@ export default class RiverRaid extends Window {
     
     this._ctx.clearRect(0, 0, this.width, this.height);
     this._river.draw(this._ctx);
+    this._bridges.draw(this._ctx);
     this._player.draw(this._ctx);
   }
 }

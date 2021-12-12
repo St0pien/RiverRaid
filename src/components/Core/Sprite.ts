@@ -6,12 +6,30 @@ export class Sprite implements Drawable {
   protected imgOffset: number;
   protected pos: Cords;
   protected size: Cords;
+  protected frameSize: Cords
 
-  constructor(img: HTMLImageElement, pos: Cords, size: Cords, offset = 0) {
+  constructor(img: HTMLImageElement, pos: Cords, size: Cords, frameSize: Cords, offset = 0) {
     this.img = img;
     this.pos = pos;
     this.size = size;
+    this.frameSize = frameSize;
     this.imgOffset = offset;
+  }
+
+  pureDraw(ctx: CanvasRenderingContext2D) {
+    const [x, y] = this.pos;
+    const [w, h] = this.size;
+    ctx.drawImage(
+      this.img,
+      0,
+      this.imgOffset*this.frameSize[1],
+      this.frameSize[0],
+      this.frameSize[1],
+      x,
+      y,
+      w,
+      h
+    );
   }
 
   draw(ctx: CanvasRenderingContext2D) {
@@ -20,9 +38,9 @@ export class Sprite implements Drawable {
     ctx.drawImage(
       this.img,
       0,
-      this.imgOffset*100,
-      100,
-      100,
+      this.imgOffset*this.frameSize[1],
+      this.frameSize[0],
+      this.frameSize[1],
       Level.hCords(x - w / 2),
       Level.vCords(y - h / 2),
       Level.heightPercent(w),

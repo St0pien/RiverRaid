@@ -1,3 +1,5 @@
+import { Sprite } from "./Sprite";
+
 export type Cords = [number, number];
 
 export interface Drawable {
@@ -6,6 +8,10 @@ export interface Drawable {
 
 export interface Updatable {
   update(timeElapsed: number): void;
+}
+
+export interface Collidable {
+  isColliding(other: Sprite): boolean;
 }
 
 export interface GameObject extends Drawable, Updatable {}

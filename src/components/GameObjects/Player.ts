@@ -10,7 +10,7 @@ export default class Player extends Sprite implements GameObject {
   private readonly SPEED: number = 0.02;
 
   constructor() {
-    super(Player.SPRITE_IMG, [-1, 40], [5, 5]);
+    super(Player.SPRITE_IMG, [-1, 40], [5, 5], [100, 100]);
     Input.bindKeyAction('ArrowLeft', this.moveLeft);
     Input.bindKeyAction('ArrowRight', this.moveRight);
     Input.bindKeyAction('ArrowUp', this.accelerate);
@@ -82,7 +82,7 @@ export default class Player extends Sprite implements GameObject {
   update(timeElapsed: number) {
     let blocks;
     blocks = ['ArrowLeft', 'ArrowRight'];
-    if (Input.keysInactive(blocks)) {
+    if (Input.keysInactive(blocks) || Input.keyMap[blocks[0]] && Input.keyMap[blocks[1]]) {
       this.imgOffset = 0;
     }
 

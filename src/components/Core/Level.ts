@@ -120,20 +120,7 @@ export default class Level {
 
     const yIndex = heightMap.indexOf(Math.min(...heightMap));
     heightMap[yIndex] = Infinity
-
     const y2Index = heightMap.indexOf(Math.min(...heightMap));
-
-    // const yIndex = this.map.findIndex(
-    // (_, index) =>
-    // Math.abs(
-    // y -
-    // (Level.mapHeight -
-    // ((index - Level.downPresegments - 1) * Level.mapHeight) /
-    // (Level.map.length - Level.hiddenSegments - 1)) +
-    // Level.scroll
-    // ) <
-    // Level.mapHeight / (Level.map.length - Level.hiddenSegments - 1)
-    // );
     return [y2Index, yIndex];
   }
 
