@@ -4,11 +4,13 @@ import Input from './Core/Input';
 import River from './GameObjects/River';
 import Level from './Core/Level';
 import Bridges from './GameObjects/Bridge';
+import { Collidable } from './Core/types';
 
 export default class RiverRaid extends Window {
   private _player: Player;
   private _river: River;
   private _bridges: Bridges;
+  private _obstacles: Collidable[] = [];
 
   constructor() {
     super()
@@ -16,11 +18,18 @@ export default class RiverRaid extends Window {
     this._player = new Player();
     this._river = new River();
     this._bridges = new Bridges();
+    this._obstacles.push(this._bridges);
   }
 
   update(timeElapsed: number) {
     this._player.update(timeElapsed);
     Level.update(timeElapsed);
+
+    this._obstacles.forEach(obstacle => {
+      if (obstacle.isColliding(this._player)) {
+        this._player.die();
+      }
+    });
   }
 
   render(timeElapsed: number) {

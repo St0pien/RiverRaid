@@ -16,7 +16,7 @@ export default class Level {
   private static readonly MIN_ISLAND_SEGMENTS = 5;
   private static readonly MAX_ISLAND_SEGMENTS = 30;
 
-  private static readonly BRIDGE_SPAWN_CHANCE = 0.005;
+  private static readonly BRIDGE_SPAWN_CHANCE = 0.5;
 
   private static _map: number[][] = Array.from(
     Array(this.SEGMENT_COUNT),
