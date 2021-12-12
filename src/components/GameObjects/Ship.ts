@@ -62,6 +62,7 @@ export default class Ship extends Sprite implements GameObject, Collidable {
 
     if (this._shouldMove[1]) {
       if (Math.abs(Level.map[this._index][this._side^1] - this.pos[0]) < 6) return;
+      if (Level.islands[this._index] && Math.abs(Level.islands[this._index][this._side] - this.pos[0]) < 6) return;
 
       const multiplier = this._side == SIDE.LEFT ? 1 : -1;
       this.pos[0] += timeElapsed*multiplier*0.01;
