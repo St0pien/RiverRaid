@@ -16,7 +16,7 @@ export default class Level {
   private static readonly MIN_ISLAND_SEGMENTS = 5;
   private static readonly MAX_ISLAND_SEGMENTS = 30;
 
-  private static readonly BRIDGE_SPAWN_CHANCE = 0.005;
+  private static readonly BRIDGE_SPAWN_CHANCE = 0.05;
 
   private static _map: number[][] = Array.from(
     Array(this.SEGMENT_COUNT),
@@ -43,6 +43,11 @@ export default class Level {
   static onScrollJump: () => void;
 
   private static bridgeSpace = 0;
+  private static stopBridges = 0;
+
+  static deactivateBrdiges() {
+    this.stopBridges = 10;
+  }
 
   static canBePlaced() {
     return Level.bridges.slice(-10).every(b => !b);
@@ -289,9 +294,14 @@ export default class Level {
 
   private static generateBridges() {
     this.bridges.shift();
+    if (this.stopBridges > 0) this.stopBridges--;
 
+    
     let spawnBridge = false;
+
     if (Math.random() < this.BRIDGE_SPAWN_CHANCE) spawnBridge = true;
+    
+    if (this.stopBridges > 0) spawnBridge = false;
 
     const firstIslands = this.islands.slice(-10, this.islands.length);
     if (firstIslands.filter((i) => !i).length != firstIslands.length)

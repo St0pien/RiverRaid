@@ -2,6 +2,7 @@ import planeimg from '../../assets/sprites/plane.png';
 import bridgeimg from '../../assets/sprites/bridge.png';
 import shipimg from '../../assets/sprites/ship.png';
 import chopperimg from '../../assets/sprites/chopper.png';
+import baloonimg from '../../assets/sprites/baloon.png';
 
 export enum Colors {
   side = 'green',
@@ -23,3 +24,6 @@ ShipSprite.src = shipimg;
 
 export const ChopperSprite = new Image();
 ChopperSprite.src = chopperimg;
+
+export const BaloonSprite = new Image();
+BaloonSprite.src = baloonimg;

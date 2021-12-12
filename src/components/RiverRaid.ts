@@ -6,11 +6,13 @@ import Level from './Core/Level';
 import Bridges from './GameObjects/Bridge';
 import Ship from './GameObjects/Ship';
 import Chopper from './GameObjects/Chopper';
+import Baloon from './GameObjects/Baloon';
 import { Collidable, Vehicle } from './Core/types';
 
 enum ENEMIES {
   SHIP,
-  CHOPPER
+  CHOPPER,
+  BALOON
 }
 
 export default class RiverRaid extends Window {
@@ -30,6 +32,7 @@ export default class RiverRaid extends Window {
 
     setInterval(() => {
       if (Level.canBePlaced()) {
+        Level.deactivateBrdiges();
         const choice = Math.floor(
           Math.random() * Object.keys(ENEMIES).length / 2
         );
@@ -42,11 +45,14 @@ export default class RiverRaid extends Window {
           case ENEMIES.CHOPPER:
             vehicle = new Chopper();
             break;
+          case ENEMIES.BALOON:
+            vehicle = new Baloon();
+            break;
         }
         this._vehicles.push(vehicle);
         this._obstacles.push(vehicle);
       }
-    }, 2000);
+    }, 500);
 
     Level.onScrollJump = this.onScrollJump;
   }
