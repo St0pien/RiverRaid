@@ -1,18 +1,22 @@
 import Level from '../Core/Level';
-import { Sprite } from '../Core/Sprite';
+import Sprite from '../Core/Sprite';
 import { Vehicle } from '../Core/types';
-import { ShipSprite } from '../Core/Resources';
+import { ChopperSprite } from '../Core/Resources';
 
 enum SIDE {
   LEFT,
   RIGHT
 }
 
-export default class Ship extends Sprite implements Vehicle {
-  private static readonly SPRITE_IMG = ShipSprite;
+export default class Chopper extends Sprite implements Vehicle {
+  private static readonly SPRITE_IMG = ChopperSprite;
   private _index: number;
   private _side: SIDE;
   private _shouldMove: [boolean, boolean];
+
+  static canBePlaced() {
+    return Level.bridges.slice(-10).every(b => !b);
+  }
 
   constructor() {
     const [left, right] = Level.map[Level.map.length - 1];
@@ -21,7 +25,7 @@ export default class Ship extends Sprite implements Vehicle {
     do {
       x = Math.random() * (right - left - 6) + left + 6;
     } while (lastIsland && lastIsland[0] < x && lastIsland[1] > x);
-    super(Ship.SPRITE_IMG, [x, 0], [10, 4], [210, 75]);
+    super(Chopper.SPRITE_IMG, [x, 0], [6, 5], [100, 74], 2, 50);
     this._index = Level.map.length-1;
 
     if (Math.abs(this.pos[0] - left) < Math.abs(this.pos[0] - right)) {
@@ -41,13 +45,15 @@ export default class Ship extends Sprite implements Vehicle {
 
   get segment() {
     return this._index;
-  };
+  }
 
   isColliding(other: Sprite): boolean {
-    return Math.abs(other.position[0] - this.pos[0]) * 1.5 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.5 < other.height / 2 + this.height / 2
+    return Math.abs(other.position[0] - this.pos[0]) * 1.8 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.8 < other.height / 2 + this.height / 2
   }
 
   update(timeElapsed: number) {
+    super.update(timeElapsed);
+
     if (this._index < 0) return;
 
     const y = (Level.map.length - 1 - this._index-Level.upPresegments) * 100 / (Level.map.length - Level.hiddenSegments - 1) - 50 + (Level.scroll / Level.heightPercent(1));
@@ -65,7 +71,7 @@ export default class Ship extends Sprite implements Vehicle {
       if (Level.islands[this._index] && Math.abs(Level.islands[this._index][this._side] - this.pos[0]) < 6) return;
 
       const multiplier = this._side == SIDE.LEFT ? 1 : -1;
-      this.pos[0] += timeElapsed*multiplier*0.01;
+      this.pos[0] += timeElapsed*multiplier*0.02;
     }
   }
 

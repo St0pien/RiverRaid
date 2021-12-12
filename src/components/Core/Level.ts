@@ -12,7 +12,7 @@ export default class Level {
   private static readonly MAX_RIVER_WIDTH = 60;
   private static readonly RANDOMNESS_RATIO = 5;
 
-  private static readonly ISLAND_SPAWN_CHANCE = 0.5;
+  private static readonly ISLAND_SPAWN_CHANCE = 0.005;
   private static readonly MIN_ISLAND_SEGMENTS = 5;
   private static readonly MAX_ISLAND_SEGMENTS = 30;
 
@@ -43,6 +43,10 @@ export default class Level {
   static onScrollJump: () => void;
 
   private static bridgeSpace = 0;
+
+  static canBePlaced() {
+    return Level.bridges.slice(-10).every(b => !b);
+  }
 
   static get hiddenSegments() {
     return this.upPresegments + this.downPresegments;

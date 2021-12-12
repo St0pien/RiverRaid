@@ -15,3 +15,8 @@ export interface Collidable {
 }
 
 export interface GameObject extends Drawable, Updatable {}
+
+export interface Vehicle extends GameObject, Collidable {
+  segment: number;
+  incrementSegment(): void;
+}
