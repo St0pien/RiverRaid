@@ -4,6 +4,7 @@ import Input from './Core/Input';
 import River from './GameObjects/River';
 import Level from './Core/Level';
 import Bridges from './GameObjects/Bridge';
+import Ship from './GameObjects/Ship';
 import { Collidable } from './Core/types';
 
 export default class RiverRaid extends Window {
@@ -11,6 +12,7 @@ export default class RiverRaid extends Window {
   private _river: River;
   private _bridges: Bridges;
   private _obstacles: Collidable[] = [];
+  private _ships: Ship[] = [];
 
   constructor() {
     super()
@@ -19,11 +21,26 @@ export default class RiverRaid extends Window {
     this._river = new River();
     this._bridges = new Bridges();
     this._obstacles.push(this._bridges);
+
+    setInterval(() => {
+      if (Ship.canBePlaced()) {
+        const ship = new Ship();
+        this._ships.push(ship);
+        this._obstacles.push(ship);
+      }
+    }, 2000);
+
+    Level.onScrollJump = this.onScrollJump;
+  }
+
+  onScrollJump = () => {
+    this._ships.forEach(ship => ship.incrementSegment());
   }
 
   update(timeElapsed: number) {
     this._player.update(timeElapsed);
     Level.update(timeElapsed);
+    this._ships.forEach(ship => ship.update(timeElapsed));
 
     this._obstacles.forEach(obstacle => {
       if (obstacle.isColliding(this._player)) {
@@ -40,5 +57,6 @@ export default class RiverRaid extends Window {
     this._river.draw(this._ctx);
     this._bridges.draw(this._ctx);
     this._player.draw(this._ctx);
+    this._ships.forEach(ship => ship.draw(this._ctx));
   }
 }

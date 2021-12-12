@@ -82,7 +82,10 @@ export default class Player extends Sprite implements GameObject {
   update(timeElapsed: number) {
     let blocks;
     blocks = ['ArrowLeft', 'ArrowRight'];
-    if (Input.keysInactive(blocks) || Input.keyMap[blocks[0]] && Input.keyMap[blocks[1]]) {
+    if (
+      Input.keysInactive(blocks) ||
+      (Input.keyMap[blocks[0]] && Input.keyMap[blocks[1]])
+    ) {
       this.imgOffset = 0;
     }
 
@@ -91,7 +94,7 @@ export default class Player extends Sprite implements GameObject {
       Level.speedDefault(timeElapsed);
     }
 
-    this.corners.forEach(corner => {
+    this.corners.forEach((corner) => {
       if (!Level.isBetweenShores(corner[0], corner[1])) {
         this.die();
       }

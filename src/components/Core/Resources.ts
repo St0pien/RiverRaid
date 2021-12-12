@@ -1,5 +1,6 @@
 import planeimg from '../../assets/sprites/plane.png';
 import bridgeimg from '../../assets/sprites/bridge.png';
+import shipimg from '../../assets/sprites/ship.png';
 
 export enum Colors {
   side = 'green',
@@ -15,3 +16,6 @@ PlaneSprite.src = planeimg;
 
 export const BridgeSprite = new Image();
 BridgeSprite.src = bridgeimg;
+
+export const ShipSprite = new Image();
+ShipSprite.src = shipimg;
