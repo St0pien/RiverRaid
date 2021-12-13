@@ -1,22 +1,14 @@
 import Level from '../Core/Level';
 import Sprite from '../Core/Sprite';
-import { Vehicle } from '../Core/types';
+import { Vehicle, SIDE } from '../Core/types';
 import { ChopperSprite } from '../Core/Resources';
 
-enum SIDE {
-  LEFT,
-  RIGHT
-}
 
 export default class Chopper extends Sprite implements Vehicle {
   private static readonly SPRITE_IMG = ChopperSprite;
   private _index: number;
   private _side: SIDE;
   private _shouldMove: [boolean, boolean];
-
-  static canBePlaced() {
-    return Level.bridges.slice(-10).every(b => !b);
-  }
 
   constructor() {
     const [left, right] = Level.map[Level.map.length - 1];
@@ -48,7 +40,7 @@ export default class Chopper extends Sprite implements Vehicle {
   }
 
   isColliding(other: Sprite): boolean {
-    return Math.abs(other.position[0] - this.pos[0]) * 1.8 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.8 < other.height / 2 + this.height / 2
+    return Math.abs(other.position[0] - this.pos[0]) * 4 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.8 < other.height / 2 + this.height / 2
   }
 
   update(timeElapsed: number) {

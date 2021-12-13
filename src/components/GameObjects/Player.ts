@@ -10,7 +10,7 @@ export default class Player extends Sprite implements GameObject {
   private readonly SPEED: number = 0.02;
 
   constructor() {
-    super(Player.SPRITE_IMG, [-1, 40], [5, 5], [100, 100]);
+    super(Player.SPRITE_IMG, [-1, 38], [5, 5], [100, 100]);
     Input.bindKeyAction('ArrowLeft', this.moveLeft);
     Input.bindKeyAction('ArrowRight', this.moveRight);
     Input.bindKeyAction('ArrowUp', this.accelerate);
@@ -99,6 +99,10 @@ export default class Player extends Sprite implements GameObject {
         this.die();
       }
     });
+
+    if (Level.fuelLevel < 2) {
+      this.die();
+    }
   }
 
   draw(ctx: CanvasRenderingContext2D) {

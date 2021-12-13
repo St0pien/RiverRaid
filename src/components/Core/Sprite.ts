@@ -59,8 +59,8 @@ export class Sprite implements Drawable {
       this.imgOffset * this.frameSize[1],
       this.frameSize[0],
       this.frameSize[1],
-      Level.hCords(x - w / 2),
-      Level.vCords(y - h / 2),
+      Level.hCords(x) - Level.heightPercent(w) / 2,
+      Level.vCords(y) - Level.heightPercent(h) / 2,
       Level.heightPercent(w),
       Level.heightPercent(h)
     );
@@ -105,8 +105,8 @@ export default class AnimatedSprite extends Sprite implements GameObject {
       this.imgOffset * this.frameSize[1],
       this.frameSize[0],
       this.frameSize[1],
-      Level.hCords(x - w / 2),
-      Level.vCords(y - h / 2),
+      Level.hCords(x) - Level.heightPercent(w / 2),
+      Level.vCords(y) - Level.heightPercent(h / 2),
       Level.heightPercent(w),
       Level.heightPercent(h)
     );

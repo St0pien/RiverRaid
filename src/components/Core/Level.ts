@@ -39,11 +39,26 @@ export default class Level {
   static mapHeight: number = -1;
   static upPresegments: number = 10;
   static downPresegments: number = 1;
+  private static _fuelLevel: number = 100;
+
+  static onFuelUpdate: (val: number) => void;
 
   static onScrollJump: () => void;
 
   private static bridgeSpace = 0;
   private static stopBridges = 0;
+
+  static get fuelLevel() {
+    return this._fuelLevel;
+  }
+
+  static set fuelLevel(val: number) {
+    this._fuelLevel = val;
+    if (this._fuelLevel > 100) {
+      this._fuelLevel = 100;
+    }
+    this.onFuelUpdate(val);
+  }
 
   static deactivateBrdiges() {
     this.stopBridges = 10;
@@ -329,6 +344,7 @@ export default class Level {
 
   static update(timeElapsed: number) {
     this._scroll += timeElapsed * this.SCROLL_SPEED;
+    this.fuelLevel += timeElapsed*0.0001*this.SCROLL_SPEED*(0 - this.fuelLevel);
 
     if (
       this.scroll >=

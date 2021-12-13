@@ -1,12 +1,7 @@
 import Level from '../Core/Level';
 import { Sprite } from '../Core/Sprite';
-import { Vehicle } from '../Core/types';
+import { Vehicle, SIDE } from '../Core/types';
 import { BaloonSprite } from '../Core/Resources';
-
-enum SIDE {
-  LEFT,
-  RIGHT
-}
 
 export default class Baloon extends Sprite implements Vehicle {
   private static readonly SPRITE_IMG = BaloonSprite;
@@ -19,7 +14,7 @@ export default class Baloon extends Sprite implements Vehicle {
     const lastIsland = Level.islands[Level.map.length - 1];
     let x;
     do {
-      x = Math.random() * (right - left - 6) + left + 6;
+      x = Math.random() * (right - left - 10) + left + 10;
     } while (lastIsland && lastIsland[0] < x && lastIsland[1] > x);
     super(Baloon.SPRITE_IMG, [x, 0], [7, 8], [100, 122]);
     this._index = Level.map.length-1;
@@ -42,7 +37,7 @@ export default class Baloon extends Sprite implements Vehicle {
   };
 
   isColliding(other: Sprite): boolean {
-    return Math.abs(other.position[0] - this.pos[0]) * 1.5 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.5 < other.height / 2 + this.height / 2
+    return Math.abs(other.position[0] - this.pos[0]) * 3 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.5 < other.height / 2 + this.height / 2
   }
 
   update(timeElapsed: number) {

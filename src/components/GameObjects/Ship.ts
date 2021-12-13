@@ -1,12 +1,7 @@
 import Level from '../Core/Level';
 import { Sprite } from '../Core/Sprite';
-import { Vehicle } from '../Core/types';
+import { Vehicle, SIDE } from '../Core/types';
 import { ShipSprite } from '../Core/Resources';
-
-enum SIDE {
-  LEFT,
-  RIGHT
-}
 
 export default class Ship extends Sprite implements Vehicle {
   private static readonly SPRITE_IMG = ShipSprite;
@@ -44,7 +39,7 @@ export default class Ship extends Sprite implements Vehicle {
   };
 
   isColliding(other: Sprite): boolean {
-    return Math.abs(other.position[0] - this.pos[0]) * 1.5 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.5 < other.height / 2 + this.height / 2
+    return Math.abs(other.position[0] - this.pos[0]) * 2 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.5 < other.height / 2 + this.height / 2
   }
 
   update(timeElapsed: number) {

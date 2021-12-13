@@ -20,3 +20,9 @@ export interface Vehicle extends GameObject, Collidable {
   segment: number;
   incrementSegment(): void;
 }
+
+export enum SIDE {
+  LEFT,
+  RIGHT
+}
+
