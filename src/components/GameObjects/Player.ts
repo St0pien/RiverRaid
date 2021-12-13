@@ -1,20 +1,37 @@
-import { Cords, GameObject } from '../Core/types';
+import { GameObject } from '../Core/types';
 import Input from '../Core/Input';
 import Level from '../Core/Level';
 import { Sprite } from '../Core/Sprite';
 import { PlaneSprite } from '../Core/Resources';
+import Bullet from './Bullet';
+import { explosions } from './Explosions';
+import Explosion from './Explosion';
 
 export default class Player extends Sprite implements GameObject {
   private static readonly SPRITE_IMG = PlaneSprite;
   private static readonly COLLIDER_MULTIPLIER = 0.85;
-  private readonly SPEED: number = 0.02;
+  private readonly SPEED: number = 0.015;
+  private _bullets: Bullet[] = [];
+  private _bulletDelay: number = 0;
 
   constructor() {
-    super(Player.SPRITE_IMG, [-1, 38], [5, 5], [100, 100]);
+    super(Player.SPRITE_IMG, [-1, 35], [5, 5], [100, 100]);
     Input.bindKeyAction('ArrowLeft', this.moveLeft);
     Input.bindKeyAction('ArrowRight', this.moveRight);
     Input.bindKeyAction('ArrowUp', this.accelerate);
     Input.bindKeyAction('ArrowDown', this.decelerate);
+    Input.bindKeyAction('Space', this.shoot);
+  }
+
+  get bullets() {
+    return this._bullets;
+  }
+
+  shoot = (timeElapsed: number) => {
+    if (this._bulletDelay < 0) {
+      this._bullets.push(new Bullet([...this.pos]));
+      this._bulletDelay = 200;
+    }
   }
 
   moveLeft = (timeElapsed: number) => {
@@ -38,7 +55,11 @@ export default class Player extends Sprite implements GameObject {
   };
 
   die() {
-    alert('You died!');
+    Level.stop = true;
+    explosions.push(new Explosion([...this.pos], [this.size[0]*2, this.size[1]*2], 300, 7));
+    setTimeout(() => {
+      (document.querySelector('.over') as HTMLElement).style.display = 'block';
+    }, 1000);
   }
 
   get corners() {
@@ -103,9 +124,15 @@ export default class Player extends Sprite implements GameObject {
     if (Level.fuelLevel < 2) {
       this.die();
     }
+
+    this._bulletDelay -= timeElapsed;
+    // this._bullets = this._bullets.filter(b => !b.destroyed);
+    this._bullets.forEach(bullet => bullet.update(timeElapsed));
   }
 
   draw(ctx: CanvasRenderingContext2D) {
+    if (Level.stop) return;
     super.draw(ctx);
+    this._bullets.forEach(bullet => bullet.draw(ctx));
   }
 }

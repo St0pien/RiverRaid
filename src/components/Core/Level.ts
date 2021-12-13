@@ -1,4 +1,5 @@
 export default class Level {
+  static stop = false;
   static readonly MAX_SCROLL_SPEED = 1;
   static readonly MIN_SCROLL_SPEED = 0;
   private static _scroll = 0;
@@ -28,7 +29,7 @@ export default class Level {
     () => null
   );
 
-  private static _bridges: boolean[] = Array.from(
+  private static _bridges: (boolean | number)[] = Array.from(
     Array(this.SEGMENT_COUNT),
     () => false
   );
@@ -344,7 +345,7 @@ export default class Level {
 
   static update(timeElapsed: number) {
     this._scroll += timeElapsed * this.SCROLL_SPEED;
-    this.fuelLevel += timeElapsed*0.0001*this.SCROLL_SPEED*(0 - this.fuelLevel);
+    this.fuelLevel += timeElapsed*0.0001*this.SCROLL_SPEED*(-100);
 
     if (
       this.scroll >=

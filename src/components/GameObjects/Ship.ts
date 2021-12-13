@@ -2,19 +2,22 @@ import Level from '../Core/Level';
 import { Sprite } from '../Core/Sprite';
 import { Vehicle, SIDE } from '../Core/types';
 import { ShipSprite } from '../Core/Resources';
+import { explosions } from './Explosions';
+import Explosion from './Explosion';
 
 export default class Ship extends Sprite implements Vehicle {
   private static readonly SPRITE_IMG = ShipSprite;
   private _index: number;
   private _side: SIDE;
   private _shouldMove: [boolean, boolean];
+  hit: boolean;
 
   constructor() {
     const [left, right] = Level.map[Level.map.length - 1];
     const lastIsland = Level.islands[Level.map.length - 1];
     let x;
     do {
-      x = Math.random() * (right - left - 6) + left + 6;
+      x = Math.random() * (right - left - 10) + left + 10;
     } while (lastIsland && lastIsland[0] < x && lastIsland[1] > x);
     super(Ship.SPRITE_IMG, [x, 0], [10, 4], [210, 75]);
     this._index = Level.map.length-1;
@@ -37,6 +40,12 @@ export default class Ship extends Sprite implements Vehicle {
   get segment() {
     return this._index;
   };
+
+  destroy() {
+    explosions.push(new Explosion([...this.pos], [...this.size], 300, this._index));
+    this._index = -1;
+    this.hit = true;
+  }
 
   isColliding(other: Sprite): boolean {
     return Math.abs(other.position[0] - this.pos[0]) * 2 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.5 < other.height / 2 + this.height / 2

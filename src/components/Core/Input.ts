@@ -1,3 +1,5 @@
+import Level from "./Level";
+
 interface KeyAction {
   action: (timeElapsed: number) => any;
   key: string;
@@ -26,7 +28,7 @@ export default class Input {
 
   static update(timeElapsed: number) {
     this._actionMap.forEach(({ key, action }) => {
-      if (this._keyMap[key]) {
+      if (this._keyMap[key] && !Level.stop) {
         action(timeElapsed);
       }
     });

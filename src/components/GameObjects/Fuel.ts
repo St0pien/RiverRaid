@@ -2,10 +2,13 @@ import Level from '../Core/Level';
 import { Sprite } from '../Core/Sprite';
 import { Vehicle } from '../Core/types';
 import { FuelSprite } from '../Core/Resources';
+import { explosions } from './Explosions';
+import Explosion from './Explosion';
 
 export default class Fuel extends Sprite implements Vehicle {
   private static readonly SPRITE_IMG = FuelSprite;
   private _index: number;
+  hit: boolean;
 
   constructor() {
     const [left, right] = Level.map[Level.map.length - 1];
@@ -25,6 +28,12 @@ export default class Fuel extends Sprite implements Vehicle {
   get segment() {
     return this._index;
   };
+
+  destroy() {
+    explosions.push(new Explosion([...this.pos], [...this.size], 300, this._index));
+    this._index = -1;
+    this.hit = true;
+  }
 
   isColliding(other: Sprite): boolean {
     return Math.abs(other.position[0] - this.pos[0]) * 2 < other.width / 2 + this.width / 2 && Math.abs(other.position[1] - this.pos[1]) * 1.5 < other.height / 2 + this.height / 2

@@ -6,7 +6,8 @@ import baloonimg from '../../assets/sprites/baloon.png';
 import jetimg from '../../assets/sprites/enemy-plane.png';
 import fuelimg from '../../assets/sprites/fuel.png';
 import statsimg from '../../assets/sprites/stats.png';
-
+import bulletimg from '../../assets/sprites/bullet.png';
+import explosionimg from '../../assets/sprites/explosion.png';
 export enum Colors {
   side = 'green',
   water = 'blue',
@@ -40,3 +41,9 @@ FuelSprite.src = fuelimg;
 
 export const StatsSprite = new Image();
 StatsSprite.src = statsimg;
+
+export const BulletSprite = new Image();
+BulletSprite.src = bulletimg;
+
+export const ExplosionSprite = new Image();
+ExplosionSprite.src = explosionimg;

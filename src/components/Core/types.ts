@@ -11,6 +11,9 @@ export interface Updatable {
 }
 
 export interface Collidable {
+  hit: boolean
+
+  destroy(): void;
   isColliding(other: Sprite): boolean;
 }
 

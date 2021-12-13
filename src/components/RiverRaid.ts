@@ -9,8 +9,9 @@ import Chopper from './GameObjects/Chopper';
 import Baloon from './GameObjects/Baloon';
 import Jet from './GameObjects/Jet';
 import Fuel from './GameObjects/Fuel';
-import Stats from './Core/Stats';
+import Stats from './GameObjects/Stats';
 import { Collidable, Vehicle } from './Core/types';
+import { explosions } from './GameObjects/Explosions';
 
 enum ENEMIES {
   SHIP,
@@ -46,9 +47,15 @@ export default class RiverRaid extends Window {
   onScrollJump = () => {
     this._vehicles.forEach(vehicle => vehicle.incrementSegment());
     this._fuels.forEach(fuel => fuel.incrementSegment());
+    explosions.forEach(explosion => explosion.incrementSegment());
   };
 
   update(timeElapsed: number) {
+    if (Level.stop) {
+      explosions.forEach(explosion => explosion.update(timeElapsed));
+      return;
+    };
+
     this._nextObstacle -= timeElapsed;
     this._nextFuel -= timeElapsed;
     if (this._nextObstacle < 0) {
@@ -88,13 +95,6 @@ export default class RiverRaid extends Window {
       }
     }
 
-    this._player.update(timeElapsed);
-    Level.update(timeElapsed);
-    this._vehicles.forEach(vehicle => vehicle.update(timeElapsed));
-    this._vehicles = this._vehicles.filter(vehicle => vehicle.segment > 0);
-    this._fuels.forEach(fuel => fuel.update(timeElapsed));
-    this._fuels = this._fuels.filter(fuel => fuel.segment > 0);
-
     this._obstacles.forEach(obstacle => {
       if (obstacle.isColliding(this._player)) {
         this._player.die();
@@ -103,9 +103,34 @@ export default class RiverRaid extends Window {
 
     this._fuels.forEach(fuel => {
       if (fuel.isColliding(this._player)) {
-        Level.fuelLevel += timeElapsed*0.1;
+        Level.fuelLevel += timeElapsed * 0.1;
       }
-    })
+    });
+
+    this._player.bullets.forEach(bullet => {
+      this._obstacles.forEach(obstacle => {
+        if (obstacle.isColliding(bullet) && (!obstacle.hit || obstacle instanceof Bridges)) {
+          obstacle.destroy();
+          bullet.destroy();
+        }
+      });
+
+      this._fuels.forEach(fuel => {
+        if (fuel.isColliding(bullet) && !fuel.hit) {
+          fuel.destroy();
+          bullet.destroy();
+        }
+      });
+    });
+
+    this._player.update(timeElapsed);
+    Level.update(timeElapsed);
+    this._vehicles.forEach(vehicle => vehicle.update(timeElapsed));
+    this._vehicles = this._vehicles.filter(vehicle => vehicle.segment > 0);
+    this._fuels.forEach(fuel => fuel.update(timeElapsed));
+    this._fuels = this._fuels.filter(fuel => fuel.segment > 0);
+    explosions.forEach(explosion => explosion.update(timeElapsed));
+    explosions.filter(explosion => explosion.active);
   }
 
   render(timeElapsed: number) {
@@ -114,10 +139,11 @@ export default class RiverRaid extends Window {
 
     this._ctx.clearRect(0, 0, this.width, this.height);
     this._river.draw(this._ctx);
-    this._bridges.draw(this._ctx);
-    this._player.draw(this._ctx);
-    this._vehicles.forEach(vehicle => vehicle.draw(this._ctx));
     this._fuels.forEach(fuel => fuel.draw(this._ctx));
+    this._bridges.draw(this._ctx);
+    this._vehicles.forEach(vehicle => vehicle.draw(this._ctx));
+    this._player.draw(this._ctx);
+    explosions.forEach(explosion => explosion.draw(this._ctx));
     this._stats.draw(this._ctx);
   }
 }

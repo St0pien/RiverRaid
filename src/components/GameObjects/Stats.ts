@@ -1,6 +1,6 @@
-import Level from './Level';
-import { StatsSprite, Colors } from './Resources';
-import { Sprite } from './Sprite';
+import Level from '../Core/Level';
+import { StatsSprite, Colors } from '../Core/Resources';
+import { Sprite } from '../Core/Sprite';
 
 export default class Stats extends Sprite {
   private static readonly SPRITE_IMG = StatsSprite;
